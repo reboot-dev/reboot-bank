@@ -1,0 +1,18 @@
+# Find '.proto' files in 'api/'.
+protoc api/
+
+# Tell `rsm protoc` where to put generated files.
+protoc --python=backend/api
+protoc --react=web/src/api
+
+# Watch if any generated or source files are modified.
+dev run --watch=backend/**/*.py
+
+# Tell `rsm` that this is a Python application.
+dev run --python
+
+# Save state between chaos restarts.
+dev run --name=bank
+
+# Run the application!
+dev run backend/src/main.py

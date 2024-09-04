@@ -1,0 +1,23 @@
+# Directory created from using the 'rsm' CLI tool.
+/.rsm/
+
+# The recommended virtualenv directory.
+/.venv/
+
+# Temporary directories produced by `pytest`.
+__pycache__/
+.pytest_cache/
+
+web/node_modules/
+web/dist/
+
+# Secrets.
+backend/secrets/
+
+# Generated code.
+backend/api/
+web/src/api/
+boilerplate/
+
+# Binary artifacts produced only during Resemble library development.
+.unpublished-resemble-wheel/*.whl
