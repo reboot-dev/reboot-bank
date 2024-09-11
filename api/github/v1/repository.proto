@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package github.v1;
+
+import "resemble/v1alpha1/options.proto";
+
+////////////////////////////////////////////////////////////////////////
+
+service RepositoryInterface {
+  rpc Attach(AttachRequest) returns (AttachResponse) {
+    option (resemble.v1alpha1.method) = {
+      writer: {
+        constructor: {},
+      },
+    };
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+
+message Repository {
+  option (.resemble.v1alpha1.state) = {
+  };
+
+  string org = 1;
+  string repo = 2;
+}
+
+////////////////////////////////////////////////////////////////////////
+
+message AttachRequest {
+  string org = 1;
+  string repo = 2;
+}
+
+message AttachResponse {}
+
+////////////////////////////////////////////////////////////////////////
