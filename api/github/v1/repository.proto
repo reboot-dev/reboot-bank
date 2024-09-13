@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package github.v1;
 
-import "google/api/annotations.proto";
-import "google/api/httpbody.proto";
 import "resemble/v1alpha1/options.proto";
 
 ////////////////////////////////////////////////////////////////////////
@@ -36,24 +34,5 @@ message AttachRequest {
 }
 
 message AttachResponse {}
-
-////////////////////////////////////////////////////////////////////////
-
-service Http {
-  // Serve a web dashboard. Uses `HttpBody` to return arbitrary content (HTML,
-  // JS) to callers; see `httpbody.proto` for more details.
-  rpc Webhook(WebhookRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {
-      post: "/github/v1/repository/webhook"
-      body: "*"
-    };
-  }
-}
-
-////////////////////////////////////////////////////////////////////////
-
-message WebhookRequest {
-  string data = 1;
-}
 
 ////////////////////////////////////////////////////////////////////////
