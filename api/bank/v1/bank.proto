@@ -2,32 +2,32 @@ syntax = "proto3";
 
 package bank.v1;
 
-import "resemble/v1alpha1/options.proto";
+import "rbt/v1alpha1/options.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
 service AccountInterface {
   rpc Balance(BalanceRequest) returns (BalanceResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       reader: {},
     };
   }
 
   rpc Deposit(DepositRequest) returns (DepositResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       writer: {},
     };
   }
 
   rpc Withdraw(WithdrawRequest) returns (WithdrawResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       writer: {},
       errors: [ "OverdraftError" ],
     };
   }
 
   rpc Open(OpenRequest) returns (OpenResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       writer: {
         constructor: {},
       },
@@ -35,7 +35,7 @@ service AccountInterface {
   }
 
   rpc InterestTask(InterestTaskRequest) returns (InterestTaskResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       writer: {},
     };
   }
@@ -44,7 +44,7 @@ service AccountInterface {
 ////////////////////////////////////////////////////////////////////////
 
 message Account {
-  option (.resemble.v1alpha1.state) = {
+  option (.rbt.v1alpha1.state) = {
   };
 
   string name = 1;
@@ -98,20 +98,20 @@ message InterestTaskResponse {}
 
 service BankInterface {
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       transaction: {}
     };
   }
 
   rpc Transfer(TransferRequest) returns (TransferResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       transaction: {},
     };
   }
 
   rpc AccountBalances(AccountBalancesRequest)
       returns (AccountBalancesResponse) {
-    option (resemble.v1alpha1.method) = {
+    option (rbt.v1alpha1.method) = {
       reader: {},
     };
   }
@@ -120,7 +120,7 @@ service BankInterface {
 ////////////////////////////////////////////////////////////////////////
 
 message Bank {
-  option (.resemble.v1alpha1.state) = {
+  option (.rbt.v1alpha1.state) = {
   };
 
   // ID for underlying `SortedMap` of account IDs.

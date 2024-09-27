@@ -25,30 +25,30 @@ for file in "requirements.lock" "requirements-dev.lock" "pyproject.toml"; do
   mv "${file}.tmp" "$file"
 done
 
-# Use the published Resemble pip package by default, but allow the test system
+# Use the published Reboot pip package by default, but allow the test system
 # to override them with a different value.
-if [ -n "$REBOOT_RESEMBLE_WHL_FILE" ]; then
-  # Install the `reboot-resemble` package from the specified path explicitly, over-
+if [ -n "$REBOOT_WHL_FILE" ]; then
+  # Install the `reboot` package from the specified path explicitly, over-
   # writing the version from `pyproject.toml`.
-  rye remove --no-sync reboot-resemble
-  rye remove --no-sync --dev reboot-resemble
-  rye add --dev reboot-resemble --absolute --path=$REBOOT_RESEMBLE_WHL_FILE
+  rye remove --no-sync reboot
+  rye remove --no-sync --dev reboot
+  rye add --dev reboot --absolute --path=$REBOOT_WHL_FILE
 fi
 
 # Create and activate a virtual environment.
 rye sync --no-lock
 source .venv/bin/activate
 
-rsm protoc
+rbt protoc
 
 mypy backend/
 
-if [ -n "$EXPECTED_RSM_DEV_OUTPUT_FILE" ]; then
+if [ -n "$EXPECTED_RBT_DEV_OUTPUT_FILE" ]; then
   actual_output_file=$(mktemp)
 
-  rsm dev run --terminate-after-health-check > "$actual_output_file"
+  rbt dev run --terminate-after-health-check > "$actual_output_file"
 
-  check_lines_in_file "$EXPECTED_RSM_DEV_OUTPUT_FILE" "$actual_output_file"
+  check_lines_in_file "$EXPECTED_RBT_DEV_OUTPUT_FILE" "$actual_output_file"
 
   rm "$actual_output_file"
 fi
