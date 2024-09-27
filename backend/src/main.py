@@ -1,9 +1,9 @@
 import asyncio
 import random
-import resemble.std.collections.sorted_map
-import resemble.thirdparty.mailgun
+import reboot.std.collections.sorted_map
+import reboot.thirdparty.mailgun
 import uuid
-from bank.v1.bank_rsm import (
+from bank.v1.bank_rbt import (
     Account,
     AccountBalancesRequest,
     AccountBalancesResponse,
@@ -26,17 +26,17 @@ from bank.v1.bank_rsm import (
     WithdrawResponse,
 )
 from datetime import timedelta
-from resemble.aio.applications import Application
-from resemble.aio.call import Options
-from resemble.aio.contexts import (
+from rbt.std.collections.v1.sorted_map_rbt import SortedMap
+from rbt.thirdparty.mailgun.v1 import mailgun_rbt as mailgun
+from reboot.aio.applications import Application
+from reboot.aio.call import Options
+from reboot.aio.contexts import (
     ReaderContext,
     TransactionContext,
     WriterContext,
 )
-from resemble.aio.secrets import Secrets
-from resemble.std.collections.v1.sorted_map_rsm import SortedMap
-from resemble.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
-from resemble.thirdparty.mailgun.v1 import mailgun_rsm as mailgun
+from reboot.aio.secrets import Secrets
+from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
 from uuid_extensions import uuid7
 
 
@@ -187,9 +187,9 @@ async def main():
     await Application(
         servicers=[AccountServicer, BankServicer] +
         # Include mailgun `Message` servicers.
-        resemble.thirdparty.mailgun.servicers() +
+        reboot.thirdparty.mailgun.servicers() +
         # Include `SortedMap` servicers.
-        resemble.std.collections.sorted_map.servicers(),
+        reboot.std.collections.sorted_map.servicers(),
     ).run()
 
 

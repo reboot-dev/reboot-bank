@@ -1,4 +1,4 @@
-# Resemble Bank
+# Reboot Bank
 
 For the impatient:
 1. Prepare an environment by either:
@@ -8,14 +8,14 @@ For the impatient:
 
 ### Overview
 
-This repository contains an example bank written using Resemble.
+This repository contains an example bank written using Reboot.
 
-The [Resemble '.proto' definition](https://docs.reboot.dev/develop/schema#code-generation)
+The [Reboot '.proto' definition](https://docs.reboot.dev/develop/schema#code-generation)
 can be found in the `api/` directory, grouped into
 subdirectories by proto package, while backend specific code can be
 found in `backend/` and front end specific code in `web/`.
 
-_For more information on all of the Resemble examples, please [see the docs](https://docs.reboot.dev/get_started/examples)._
+_For more information on all of the Reboot examples, please [see the docs](https://docs.reboot.dev/get_started/examples)._
 
 ## Prepare an environment by...
 
@@ -27,7 +27,7 @@ This method requires running [VSCode](https://code.visualstudio.com/) on your ma
 This repository includes a [Dev Container config](./.devcontainer/devcontainer.json) (more about [Dev Containers](https://containers.dev/)) that declares all of the dependencies that you need to build and run the example. Dev Containers can be started locally with VSCode, but we recommend using GitHub's [Codespaces](https://github.com/features/codespaces) to quickly launch the Dev Container:
 
 1. Right-click to create a Codespace in a new tab or window:
-    * [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/reboot-dev/resemble-bank)
+    * [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/reboot-dev/reboot-bank)
     * *Important*: In order to view the example's front end, you must connect your local VSCode to the codespace: you cannot use VSCode in a browser window.
 2. Go to [https://github.com/codespaces](https://github.com/codespaces) and click the three dots next to the codespace you just created and then click `Open in Visual Studio Code`.
     * You can [set your default editor to VSCode for codespaces](https://docs.github.com/en/codespaces/customizing-your-codespace/setting-your-default-editor-for-github-codespaces) to avoid this step in the future. See [these instructions](https://docs.github.com/en/codespaces/developing-in-codespaces/opening-an-existing-codespace?tool=vscode) for more information.
@@ -43,7 +43,7 @@ Running directly on a host requires:
    - `x86_64 Linux` with `glibc>=2.35` (Ubuntu Jammy and other equivalent-generation Linux distributions)
    - `arm64 or x86_64 MacOS` with `MacOS>=13.0` and `Xcode>=14.3`
 - [Rye](https://rye-up.com/) - A tool to manage `python`, `pip`, and `venv`.
-   - If you are already familiar with Python [virtual environments](https://docs.python.org/3/library/venv.html), feel free to use your tool of choice with [`pyproject.toml`](./pyproject.toml). Python==3.10 is required.
+   - If you are already familiar with Python [virtual environments](https://docs.python.org/3/library/venv.html), feel free to use your tool of choice with [`pyproject.toml`](./pyproject.toml). Python >=3.10 is required.
 - Node.js
     - Including `npm`.
 - Docker
@@ -59,8 +59,8 @@ Now you're ready to [run the application](#run-the-application)!
 ### Backend
 
 Our backend is implemented in Python and we must install its dependencies before
-running it. The most notable of those dependencies is the `reboot-resemble` PyPI
-distribution, which contains both the Resemble CLI (`rsm`) and the `resemble`
+running it. The most notable of those dependencies is the `reboot` PyPI
+distribution, which contains both the Reboot CLI (`rbt`) and the `reboot`
 Python package.
 
 Using `rye`, we can create and activate a virtualenv containing this project's dependencies (as well as fetch an appropriate Python version) using:
@@ -71,14 +71,14 @@ source .venv/bin/activate
 
 #### Run the backend
 
-Then, to run the application, you can use the Resemble CLI `rsm` (present in the active virtualenv):
+Then, to run the application, you can use the Reboot CLI `rbt` (present in the active virtualenv):
 ```shell
-rsm dev run
+rbt dev run
 ```
 
-Running `rsm dev run` will watch for file modifications and restart the
-application if necessary. See the `.rsmrc` file for flags and
-arguments that get expanded when running `rsm dev run`.
+Running `rbt dev run` will watch for file modifications and restart the
+application if necessary. See the `.rbtrc` file for flags and
+arguments that get expanded when running `rbt dev run`.
 
 ### Front end
 

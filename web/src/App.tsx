@@ -1,10 +1,7 @@
-import {
-  ResembleClient,
-  ResembleClientProvider,
-} from "@reboot-dev/resemble-react";
-import React, { ChangeEvent, FC, useState, useEffect } from "react";
+import { RebootClient, RebootClientProvider } from "@reboot-dev/reboot-react";
+import React, { ChangeEvent, FC, useEffect, useState } from "react";
 import "./App.css";
-// import { useBank } from "./api/bank/v1/bank_rsm_react";
+// import { useBank } from "./api/bank/v1/bank_rbt_react";
 
 const SignUp: FC<{}> = () => {
   const [accountId, setAccountId] = useState("");
@@ -120,7 +117,7 @@ const Accounts: FC<{}> = () => {
 
 function App() {
   useEffect(() => {
-    document.title = "Resemble Bank";
+    document.title = "Reboot Bank";
   }, []);
 
   return (
@@ -136,23 +133,23 @@ function App() {
 
 export default App;
 
-const client = new ResembleClient(
-  process.env.REACT_APP_RESEMBLE_ENDPOINT || "https://dev.localhost.direct:9991"
+const client = new RebootClient(
+  process.env.REACT_APP_REBOOT_ENDPOINT || "https://dev.localhost.direct:9991"
 );
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <ResembleClientProvider client={client}>
+    <RebootClientProvider client={client}>
       <div style={cl.pageContainer}>
         <div style={cl.fixedWidthPageContainer}>
           <header style={cl.header}>
             <img src={`https://i.imgur.com/vp4iV97.png`} alt="Reboot" />
-            Resemble Bank
+            Reboot Bank
           </header>
           {children}
         </div>
       </div>
-    </ResembleClientProvider>
+    </RebootClientProvider>
   );
 };
 
