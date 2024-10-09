@@ -44,7 +44,7 @@ service AccountInterface {
 ////////////////////////////////////////////////////////////////////////
 
 message Account {
-  option (.rbt.v1alpha1.state) = {
+  option (rbt.v1alpha1.state) = {
   };
 
   string name = 1;
@@ -120,7 +120,7 @@ service BankInterface {
 ////////////////////////////////////////////////////////////////////////
 
 message Bank {
-  option (.rbt.v1alpha1.state) = {
+  option (rbt.v1alpha1.state) = {
   };
 
   // ID for underlying `SortedMap` of account IDs.
