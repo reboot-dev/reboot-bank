@@ -19,4 +19,4 @@ dev run --python
 dev run --name=bank
 
 # Run the application!
-dev run backend/src/main.py
+dev run --application=backend/src/main.py

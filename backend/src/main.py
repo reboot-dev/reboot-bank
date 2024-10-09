@@ -35,9 +35,13 @@ from reboot.aio.contexts import (
     TransactionContext,
     WriterContext,
 )
-from reboot.aio.secrets import Secrets
+from reboot.aio.secrets import SecretNotFoundException, Secrets
 from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
+from respect.logging import get_logger
+from typing import Optional
 from uuid_extensions import uuid7
+
+logger = get_logger(__name__)
 
 
 class AccountServicer(Account.Interface):
@@ -102,8 +106,9 @@ class AccountServicer(Account.Interface):
 class BankServicer(Bank.Interface):
 
     def __init__(self):
-        self.html_email = open('backend/src/email_to_bank_users.html').read()
-        self.text_email = open('backend/src/email_to_bank_users.txt').read()
+        self._html_email = open('backend/src/email_to_bank_users.html').read()
+        self._text_email = open('backend/src/email_to_bank_users.txt').read()
+        self._secrets = Secrets()
 
     async def AccountBalances(
         self,
@@ -137,18 +142,17 @@ class BankServicer(Bank.Interface):
     ) -> SignUpResponse:
         account_id = request.account_id
 
-        mailgun_api_key = await Secrets().get(MAILGUN_API_KEY_SECRET_NAME)
-
-        await mailgun.Message.construct().Send(
-            context,
-            Options(bearer_token=mailgun_api_key.decode()),
-            recipient=account_id,
-            sender='team@reboot.dev',
-            domain='reboot.dev',
-            subject='Thanks for your time!',
-            html=self.html_email,
-            text=self.text_email,
-        )
+        if mailgun_api_key := await self._mailgun_api_key():
+            await mailgun.Message.construct().Send(
+                context,
+                Options(bearer_token=mailgun_api_key),
+                recipient=account_id,
+                sender='team@reboot.dev',
+                domain='reboot.dev',
+                subject='Thanks for your time!',
+                html=self._html_email,
+                text=self._text_email,
+            )
 
         account, _ = await Account.construct(id=account_id).Open(context)
 
@@ -181,6 +185,17 @@ class BankServicer(Bank.Interface):
         )
 
         return TransferResponse()
+
+    async def _mailgun_api_key(self) -> Optional[str]:
+        try:
+            secret_bytes = await self._secrets.get(MAILGUN_API_KEY_SECRET_NAME)
+            return secret_bytes.decode()
+        except SecretNotFoundException:
+            logger.warning(
+                "The Mailgun API key secret is not set: please see the README to "
+                "enable sending email."
+            )
+            return None
 
 
 async def main():

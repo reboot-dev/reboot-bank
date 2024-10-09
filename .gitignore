@@ -11,9 +11,6 @@ __pycache__/
 web/node_modules/
 web/dist/
 
-# Secrets.
-backend/secrets/
-
 # Generated code.
 backend/api/
 web/src/api/

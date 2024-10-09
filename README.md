@@ -69,6 +69,17 @@ rye sync --no-lock
 source .venv/bin/activate
 ```
 
+#### (optional) Setup secrets
+
+To demonstrate sending emails in the bank you'll need to export your Mailgun
+API key as an environment variable.
+
+Replace `MY_MAILGUN_API_KEY` with your own mailgun API key, which you can get
+from [your Mailgun account](https://www.mailgun.com):
+```shell
+export RBT_SECRET_MAILGUN_API_KEY="MY_MAILGUN_API_KEY"
+```
+
 #### Run the backend
 
 Then, to run the application, you can use the Reboot CLI `rbt` (present in the active virtualenv):

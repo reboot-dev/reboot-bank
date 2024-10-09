@@ -1,16 +1,17 @@
 import { RebootClient, RebootClientProvider } from "@reboot-dev/reboot-react";
 import React, { ChangeEvent, FC, useEffect, useState } from "react";
+import { Mutation } from "@reboot-dev/reboot-react";
 import "./App.css";
-// import { useBank } from "./api/bank/v1/bank_rbt_react";
+import { useBank, SignUpRequest } from "./api/bank/v1/bank_rbt_react";
 
 const SignUp: FC<{}> = () => {
   const [accountId, setAccountId] = useState("");
   const [initialDeposit, setInitialDeposit] = useState("");
 
-  // const bank = useBank({ id: "SVB" });
+  const bank = useBank({ id: "SVB" });
 
   const handleClick = () => {
-    // bank.signUp({ accountId, initialDeposit: BigInt(initialDeposit) });
+    bank.signUp({ accountId, initialDeposit: BigInt(initialDeposit) });
     setAccountId("");
     setInitialDeposit("");
   };
@@ -41,14 +42,16 @@ const Transfer: FC<{}> = () => {
   const [toAccountId, setToAccountId] = useState("");
   const [amount, setAmount] = useState("");
 
-  // const bank = useBank({ id: "SVB" });
+  const bank = useBank({ id: "SVB" });
 
-  // const { response } = bank.useAccountBalances();
+  const { response } = bank.useAccountBalances();
 
-  const accountIds: string[] = []; // (response?.balances || []).map(({ accountId }) => accountId);
+  const accountIds: string[] = (response?.balances || []).map(
+    ({ accountId }) => accountId
+  );
 
   const handleClick = () => {
-    // bank.transfer({ fromAccountId, toAccountId, amount: BigInt(amount) });
+    bank.transfer({ fromAccountId, toAccountId, amount: BigInt(amount) });
     setFromAccountId("");
     setToAccountId("");
     setAmount("");
@@ -84,7 +87,8 @@ const Transfer: FC<{}> = () => {
 
 const AccountBalances: FC<{
   balances: { accountId: string; balance: bigint }[];
-}> = ({ balances }) => {
+  pendingSignups: Mutation<SignUpRequest>[];
+}> = ({ balances, pendingSignups }) => {
   return (
     <div style={cl.AccountBalancesContainer}>
       <table style={cl.table}>
@@ -101,6 +105,13 @@ const AccountBalances: FC<{
               <td>{balance.toString()}</td>
             </tr>
           ))}
+          {pendingSignups.map(({ request, idempotencyKey }) => (
+            <tr style={cl.tr} key={idempotencyKey}>
+              <td>{request.accountId}</td>
+              <td>{request.initialDeposit.toString()}</td>
+              <td className="loader"></td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -108,11 +119,16 @@ const AccountBalances: FC<{
 };
 
 const Accounts: FC<{}> = () => {
-  // const bank = useBank({ id: "SVB" });
+  const bank = useBank({ id: "SVB" });
 
-  // const { response } = bank.useAccountBalances();
+  const { response } = bank.useAccountBalances();
 
-  return <AccountBalances balances={/* response?.balances || */ []} />;
+  return (
+    <AccountBalances
+      balances={response?.balances || []}
+      pendingSignups={bank.signUp.pending || []}
+    />
+  );
 };
 
 function App() {
