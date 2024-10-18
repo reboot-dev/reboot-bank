@@ -159,7 +159,11 @@ const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
       <div style={cl.pageContainer}>
         <div style={cl.fixedWidthPageContainer}>
           <header style={cl.header}>
-            <img src={`https://i.imgur.com/vp4iV97.png`} alt="Reboot" />
+            <img
+              src={`https://i.imgur.com/vp4iV97.png`}
+              alt="Reboot"
+              referrerPolicy="no-referrer"
+            />
             Reboot Bank
           </header>
           {children}
