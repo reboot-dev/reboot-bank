@@ -6,7 +6,7 @@ import "rbt/v1alpha1/options.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
-service AccountInterface {
+service AccountMethods {
   rpc Balance(BalanceRequest) returns (BalanceResponse) {
     option (rbt.v1alpha1.method) = {
       reader: {},
@@ -96,7 +96,7 @@ message InterestTaskResponse {}
 
 ////////////////////////////////////////////////////////////////////////
 
-service BankInterface {
+service BankMethods {
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {
     option (rbt.v1alpha1.method) = {
       transaction: {}
