@@ -36,15 +36,15 @@ from reboot.aio.contexts import (
     WriterContext,
 )
 from reboot.aio.secrets import SecretNotFoundException, Secrets
+from reboot.log import get_logger
 from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
-from respect.logging import get_logger
 from typing import Optional
 from uuid_extensions import uuid7
 
 logger = get_logger(__name__)
 
 
-class AccountServicer(Account.Interface):
+class AccountServicer(Account.Servicer):
 
     async def Balance(
         self,
@@ -103,7 +103,7 @@ class AccountServicer(Account.Interface):
         return InterestTaskResponse()
 
 
-class BankServicer(Bank.Interface):
+class BankServicer(Bank.Servicer):
 
     def __init__(self):
         self._html_email = open('backend/src/email_to_bank_users.html').read()
