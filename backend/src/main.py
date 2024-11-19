@@ -94,6 +94,7 @@ class AccountServicer(Account.Servicer):
         state: Account.State,
         request: InterestTaskRequest,
     ) -> InterestTaskResponse:
+
         state.balance += 1
 
         await self.lookup().schedule(
