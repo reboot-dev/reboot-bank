@@ -1,8 +1,11 @@
-import { RebootClient, RebootClientProvider } from "@reboot-dev/reboot-react";
+import {
+  Mutation,
+  RebootClient,
+  RebootClientProvider,
+} from "@reboot-dev/reboot-react";
 import React, { ChangeEvent, FC, useEffect, useState } from "react";
-import { Mutation } from "@reboot-dev/reboot-react";
 import "./App.css";
-import { useBank, SignUpRequest } from "./api/bank/v1/bank_rbt_react";
+import { SignUpRequest, useBank } from "./api/bank/v1/bank_rbt_react";
 
 const SignUp: FC<{}> = () => {
   const [accountId, setAccountId] = useState("");
@@ -150,7 +153,7 @@ function App() {
 export default App;
 
 const client = new RebootClient(
-  process.env.REACT_APP_REBOOT_ENDPOINT || "https://dev.localhost.direct:9991"
+  process.env.REACT_APP_REBOOT_ENDPOINT as string
 );
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
