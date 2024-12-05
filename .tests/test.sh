@@ -18,13 +18,6 @@ check_lines_in_file() {
   done < "$expected"
 }
 
-# Convert symlinks to files that we need to mutate into copies.
-for file in "requirements.lock" "requirements-dev.lock" "pyproject.toml"; do
-  cp "$file" "${file}.tmp"
-  rm "$file"
-  mv "${file}.tmp" "$file"
-done
-
 # Use the published Reboot pip package by default, but allow the test system
 # to override them with a different value.
 if [ -n "$REBOOT_WHL_FILE" ]; then
@@ -32,7 +25,7 @@ if [ -n "$REBOOT_WHL_FILE" ]; then
   # writing the version from `pyproject.toml`.
   rye remove --no-sync reboot
   rye remove --no-sync --dev reboot
-  rye add --dev reboot --absolute --path=$REBOOT_WHL_FILE
+  rye add --dev reboot --absolute --path="${SANDBOX_ROOT}$REBOOT_WHL_FILE"
 fi
 
 # Create and activate a virtual environment.
@@ -53,11 +46,7 @@ if [ -n "$EXPECTED_RBT_DEV_OUTPUT_FILE" ]; then
 
   rbt $RBT_FLAGS dev run --terminate-after-health-check > "$actual_output_file"
 
-  check_lines_in_file "$EXPECTED_RBT_DEV_OUTPUT_FILE" "$actual_output_file"
+  check_lines_in_file "${SANDBOX_ROOT}$EXPECTED_RBT_DEV_OUTPUT_FILE" "$actual_output_file"
 
   rm "$actual_output_file"
 fi
-
-# Deactivate the virtual environment, since we can run a test which may require
-# another virtual environment (currently we do that only in `all_tests.sh`).
-deactivate
