@@ -26,6 +26,7 @@ from bank.v1.bank_rbt import (
     WithdrawResponse,
 )
 from datetime import timedelta
+from log.log import get_logger
 from rbt.std.collections.v1.sorted_map_rbt import SortedMap
 from rbt.thirdparty.mailgun.v1 import mailgun_rbt as mailgun
 from reboot.aio.applications import Application
@@ -36,7 +37,6 @@ from reboot.aio.contexts import (
     WriterContext,
 )
 from reboot.aio.secrets import SecretNotFoundException, Secrets
-from reboot.log import get_logger
 from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
 from typing import Optional
 from uuid_extensions import uuid7
