@@ -1,8 +1,4 @@
-import {
-  Mutation,
-  RebootClient,
-  RebootClientProvider,
-} from "@reboot-dev/reboot-react";
+import { Mutation, RebootClientProvider } from "@reboot-dev/reboot-react";
 import React, { ChangeEvent, FC, useEffect, useState } from "react";
 import "./App.css";
 import { SignUpRequest, useBank } from "./api/bank/v1/bank_rbt_react";
@@ -152,13 +148,12 @@ function App() {
 
 export default App;
 
-const client = new RebootClient(
-  process.env.REACT_APP_REBOOT_ENDPOINT as string
-);
+const url =
+  process.env.REACT_APP_REBOOT_URL || "https://dev.localhost.direct:9991";
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <RebootClientProvider client={client}>
+    <RebootClientProvider url={url}>
       <div style={cl.pageContainer}>
         <div style={cl.fixedWidthPageContainer}>
           <header style={cl.header}>
