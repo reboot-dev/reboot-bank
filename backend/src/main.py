@@ -11,10 +11,12 @@ from bank.v1.bank_rbt import (
     BalanceRequest,
     BalanceResponse,
     Bank,
+    CreateRequest,
+    CreateResponse,
     DepositRequest,
     DepositResponse,
-    InterestTaskRequest,
-    InterestTaskResponse,
+    InterestRequest,
+    InterestResponse,
     OpenRequest,
     OpenResponse,
     OverdraftError,
@@ -36,12 +38,15 @@ from reboot.aio.contexts import (
     TransactionContext,
     WriterContext,
 )
+from reboot.aio.external import ExternalContext
 from reboot.aio.secrets import SecretNotFoundException, Secrets
 from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
 from typing import Optional
 from uuid_extensions import uuid7
 
 logger = get_logger(__name__)
+
+SINGLETON_BANK_ID = 'SVB'
 
 
 class AccountServicer(Account.Servicer):
@@ -82,26 +87,26 @@ class AccountServicer(Account.Servicer):
         state: Account.State,
         request: OpenRequest,
     ) -> OpenResponse:
-        await self.lookup().schedule(
+        await self.ref().schedule(
             when=timedelta(seconds=1),
-        ).InterestTask(context)
+        ).Interest(context)
 
         return OpenResponse()
 
-    async def InterestTask(
+    async def Interest(
         self,
         context: WriterContext,
         state: Account.State,
-        request: InterestTaskRequest,
-    ) -> InterestTaskResponse:
+        request: InterestRequest,
+    ) -> InterestResponse:
 
         state.balance += 1
 
-        await self.lookup().schedule(
+        await self.ref().schedule(
             when=timedelta(seconds=random.randint(1, 4))
-        ).InterestTask(context)
+        ).Interest(context)
 
-        return InterestTaskResponse()
+        return InterestResponse()
 
 
 class BankServicer(Bank.Servicer):
@@ -111,6 +116,21 @@ class BankServicer(Bank.Servicer):
         self._text_email = open('backend/src/email_to_bank_users.txt').read()
         self._secrets = Secrets()
 
+    async def Create(
+        self,
+        context: TransactionContext,
+        state: Bank.State,
+        request: CreateRequest,
+    ) -> CreateResponse:
+        state.account_ids_map_id = str(uuid.uuid4())
+
+        await SortedMap.ref(state.account_ids_map_id).Insert(
+            context,
+            entries={},
+        )
+
+        return CreateResponse()
+
     async def AccountBalances(
         self,
         context: ReaderContext,
@@ -118,11 +138,11 @@ class BankServicer(Bank.Servicer):
         request: AccountBalancesRequest,
     ) -> AccountBalancesResponse:
         # Get the first "page" of account IDs (32 entries).
-        account_ids_map = SortedMap.lookup(state.account_ids_map_id)
+        account_ids_map = SortedMap.ref(state.account_ids_map_id)
         account_ids = await account_ids_map.Range(context, limit=32)
 
         async def balance(account_id: str):
-            account = Account.lookup(account_id)
+            account = Account.ref(account_id)
             balance = await account.Balance(context)
             return Balance(account_id=account_id, balance=balance.amount)
 
@@ -144,8 +164,9 @@ class BankServicer(Bank.Servicer):
         account_id = request.account_id
 
         if mailgun_api_key := await self._mailgun_api_key():
-            await mailgun.Message.construct().Send(
+            await mailgun.Message.Send(
                 context,
+                None,
                 Options(bearer_token=mailgun_api_key),
                 recipient=account_id,
                 sender='team@reboot.dev',
@@ -155,16 +176,13 @@ class BankServicer(Bank.Servicer):
                 text=self._text_email,
             )
 
-        account, _ = await Account.construct(id=account_id).Open(context)
+        account, _ = await Account.Open(context, account_id)
 
         await account.Deposit(context, amount=request.initial_deposit)
 
-        if state.account_ids_map_id == '':
-            state.account_ids_map_id = str(uuid.uuid4())
-
         # Save the account ID to our _distributed_ map using a UUIDv7
         # to get a "timestamp" based ordering.
-        await SortedMap.lookup(state.account_ids_map_id).Insert(
+        await SortedMap.ref(state.account_ids_map_id).Insert(
             context,
             entries={str(uuid7()): account_id.encode()},
         )
@@ -177,8 +195,8 @@ class BankServicer(Bank.Servicer):
         state: Bank.State,
         request: TransferRequest,
     ) -> TransferResponse:
-        from_account = Account.lookup(request.from_account_id)
-        to_account = Account.lookup(request.to_account_id)
+        from_account = Account.ref(request.from_account_id)
+        to_account = Account.ref(request.to_account_id)
 
         await asyncio.gather(
             from_account.Withdraw(context, amount=request.amount),
@@ -199,6 +217,10 @@ class BankServicer(Bank.Servicer):
             return None
 
 
+async def initialize(context: ExternalContext):
+    await Bank.idempotently().Create(context, SINGLETON_BANK_ID)
+
+
 async def main():
     await Application(
         servicers=[AccountServicer, BankServicer] +
@@ -206,6 +228,7 @@ async def main():
         reboot.thirdparty.mailgun.servicers() +
         # Include `SortedMap` servicers.
         reboot.std.collections.sorted_map.servicers(),
+        initialize=initialize,
     ).run()
 
 
