@@ -34,7 +34,7 @@ service AccountMethods {
     };
   }
 
-  rpc InterestTask(InterestTaskRequest) returns (InterestTaskResponse) {
+  rpc Interest(InterestRequest) returns (InterestResponse) {
     option (rbt.v1alpha1.method) = {
       writer: {},
     };
@@ -90,13 +90,19 @@ message OpenResponse {}
 
 ////////////////////////////////////////////////////////////////////////
 
-message InterestTaskRequest {}
+message InterestRequest {}
 
-message InterestTaskResponse {}
+message InterestResponse {}
 
 ////////////////////////////////////////////////////////////////////////
 
 service BankMethods {
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (rbt.v1alpha1.method).transaction = {
+      constructor: {},
+    };
+  }
+
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {
     option (rbt.v1alpha1.method) = {
       transaction: {}
@@ -126,6 +132,12 @@ message Bank {
   // ID for underlying `SortedMap` of account IDs.
   string account_ids_map_id = 1;
 }
+
+////////////////////////////////////////////////////////////////////////
+
+message CreateRequest {}
+
+message CreateResponse {}
 
 ////////////////////////////////////////////////////////////////////////
 
