@@ -32,6 +32,7 @@ from log.log import get_logger
 from rbt.std.collections.v1.sorted_map_rbt import SortedMap
 from rbt.thirdparty.mailgun.v1 import mailgun_rbt as mailgun
 from reboot.aio.applications import Application
+from reboot.aio.auth.authorizers import allow
 from reboot.aio.call import Options
 from reboot.aio.contexts import (
     ReaderContext,
@@ -50,6 +51,9 @@ SINGLETON_BANK_ID = 'SVB'
 
 
 class AccountServicer(Account.Servicer):
+
+    def authorizer(self):
+        return allow()
 
     async def Balance(
         self,
@@ -115,6 +119,9 @@ class BankServicer(Bank.Servicer):
         self._html_email = open('backend/src/email_to_bank_users.html').read()
         self._text_email = open('backend/src/email_to_bank_users.txt').read()
         self._secrets = Secrets()
+
+    def authorizer(self):
+        return allow()
 
     async def Create(
         self,
