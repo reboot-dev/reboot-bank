@@ -1,9 +1,9 @@
 # Find '.proto' files in 'api/'.
-protoc api/
+generate api/
 
-# Tell `rbt protoc` where to put generated files.
-protoc --python=backend/api
-protoc --react=web/src/api
+# Tell `rbt generate` where to put generated files.
+generate --python=backend/api
+generate --react=web/src/api
 
 # Watch if any generated or source files are modified.
 dev run --watch=backend/**/*.py
