@@ -1,6 +1,6 @@
 import asyncio
 import random
-import reboot.std.collections.sorted_map
+import reboot.std.collections.v1.sorted_map
 import reboot.thirdparty.mailgun
 import uuid
 from bank.v1.bank_rbt import (
@@ -234,7 +234,7 @@ async def main():
         # Include mailgun `Message` servicers.
         reboot.thirdparty.mailgun.servicers() +
         # Include `SortedMap` servicers.
-        reboot.std.collections.sorted_map.servicers(),
+        reboot.std.collections.v1.sorted_map.servicers(),
         initialize=initialize,
     ).run()
 
