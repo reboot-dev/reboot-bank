@@ -3,7 +3,7 @@ import React, { ChangeEvent, FC, useEffect, useState } from "react";
 import "./App.css";
 import { SignUpRequest, useBank } from "./api/bank/v1/bank_rbt_react";
 
-const SignUp: FC<{}> = () => {
+const SignUp: FC = () => {
   const [accountId, setAccountId] = useState("");
   const [initialDeposit, setInitialDeposit] = useState("");
 
@@ -36,7 +36,7 @@ const SignUp: FC<{}> = () => {
   );
 };
 
-const Transfer: FC<{}> = () => {
+const Transfer: FC = () => {
   const [fromAccountId, setFromAccountId] = useState("");
   const [toAccountId, setToAccountId] = useState("");
   const [amount, setAmount] = useState("");
@@ -117,7 +117,7 @@ const AccountBalances: FC<{
   );
 };
 
-const Accounts: FC<{}> = () => {
+const Accounts: FC = () => {
   const bank = useBank({ id: "SVB" });
 
   const { response } = bank.useAccountBalances();
@@ -149,7 +149,8 @@ function App() {
 export default App;
 
 const url =
-  process.env.REACT_APP_REBOOT_URL || "https://dev.localhost.direct:9991";
+  (import.meta.env.VITE_REBOOT_URL as string) ||
+  "https://dev.localhost.direct:9991";
 
 const Layout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -241,7 +242,7 @@ const cl = {
     margin: "0 2rem",
   },
   thead: {
-    textAlign: "left" as "left",
+    textAlign: "left" as const,
     fontSize: "large",
   },
   container: {
