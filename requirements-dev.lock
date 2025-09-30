@@ -93,10 +93,10 @@ markupsafe==2.1.5
 multidict==6.1.0
     # via aiohttp
     # via yarl
-mypy==1.2.0
+mypy==1.18.1
 mypy-extensions==1.0.0
     # via mypy
-mypy-protobuf==3.5.0
+mypy-protobuf==3.6.0
     # via reboot
 opentelemetry-api==1.28.1
     # via opentelemetry-exporter-otlp-proto-grpc
@@ -127,6 +127,7 @@ packaging==23.1
     # via opentelemetry-instrumentation
     # via reboot
 pathspec==0.12.1
+    # via mypy
     # via reboot
 protobuf==5.28.3
     # via googleapis-common-protos
@@ -155,7 +156,7 @@ python-dateutil==2.9.0.post0
 pyyaml==6.0.2
     # via kubernetes-asyncio
     # via reboot
-reboot==0.38.1
+reboot==0.38.2
 setuptools==75.1.0
     # via grpcio-tools
 six==1.16.0

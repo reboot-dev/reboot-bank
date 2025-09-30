@@ -55,14 +55,14 @@ class AccountServicer(Account.Servicer):
     def authorizer(self):
         return allow()
 
-    async def Balance(
+    async def balance(
         self,
         context: ReaderContext,
         request: BalanceRequest,
     ) -> BalanceResponse:
         return BalanceResponse(amount=self.state.balance)
 
-    async def Deposit(
+    async def deposit(
         self,
         context: WriterContext,
         request: DepositRequest,
@@ -70,7 +70,7 @@ class AccountServicer(Account.Servicer):
         self.state.balance += request.amount
         return DepositResponse()
 
-    async def Withdraw(
+    async def withdraw(
         self,
         context: WriterContext,
         request: WithdrawRequest,
@@ -82,18 +82,18 @@ class AccountServicer(Account.Servicer):
             )
         return WithdrawResponse()
 
-    async def Open(
+    async def open(
         self,
         context: WriterContext,
         request: OpenRequest,
     ) -> OpenResponse:
         await self.ref().schedule(
             when=timedelta(seconds=1),
-        ).Interest(context)
+        ).interest(context)
 
         return OpenResponse()
 
-    async def Interest(
+    async def interest(
         self,
         context: WriterContext,
         request: InterestRequest,
@@ -103,7 +103,7 @@ class AccountServicer(Account.Servicer):
 
         await self.ref().schedule(
             when=timedelta(seconds=random.randint(1, 4))
-        ).Interest(context)
+        ).interest(context)
 
         return InterestResponse()
 
@@ -118,32 +118,32 @@ class BankServicer(Bank.Servicer):
     def authorizer(self):
         return allow()
 
-    async def Create(
+    async def create(
         self,
         context: TransactionContext,
         request: CreateRequest,
     ) -> CreateResponse:
         self.state.account_ids_map_id = str(uuid4())
 
-        await SortedMap.ref(self.state.account_ids_map_id).Insert(
+        await SortedMap.ref(self.state.account_ids_map_id).insert(
             context,
             entries={},
         )
 
         return CreateResponse()
 
-    async def AccountBalances(
+    async def account_balances(
         self,
         context: ReaderContext,
         request: AccountBalancesRequest,
     ) -> AccountBalancesResponse:
         # Get the first "page" of account IDs (32 entries).
         account_ids_map = SortedMap.ref(self.state.account_ids_map_id)
-        account_ids = await account_ids_map.Range(context, limit=32)
+        account_ids = await account_ids_map.range(context, limit=32)
 
         async def balance(account_id: str):
             account = Account.ref(account_id)
-            balance = await account.Balance(context)
+            balance = await account.balance(context)
             return Balance(account_id=account_id, balance=balance.amount)
 
         return AccountBalancesResponse(
@@ -155,7 +155,7 @@ class BankServicer(Bank.Servicer):
             )
         )
 
-    async def SignUp(
+    async def sign_up(
         self,
         context: TransactionContext,
         request: SignUpRequest,
@@ -163,7 +163,7 @@ class BankServicer(Bank.Servicer):
         account_id = request.account_id
 
         if mailgun_api_key := await self._mailgun_api_key():
-            await mailgun.Message.Send(
+            await mailgun.Message.send(
                 context,
                 None,
                 Options(bearer_token=mailgun_api_key),
@@ -175,20 +175,20 @@ class BankServicer(Bank.Servicer):
                 text=self._text_email,
             )
 
-        account, _ = await Account.Open(context, account_id)
+        account, _ = await Account.open(context, account_id)
 
-        await account.Deposit(context, amount=request.initial_deposit)
+        await account.deposit(context, amount=request.initial_deposit)
 
         # Save the account ID to our _distributed_ map using a UUIDv7
         # to get a "timestamp" based ordering.
-        await SortedMap.ref(self.state.account_ids_map_id).Insert(
+        await SortedMap.ref(self.state.account_ids_map_id).insert(
             context,
             entries={str(uuid7()): account_id.encode()},
         )
 
         return SignUpResponse()
 
-    async def Transfer(
+    async def transfer(
         self,
         context: TransactionContext,
         request: TransferRequest,
@@ -197,8 +197,8 @@ class BankServicer(Bank.Servicer):
         to_account = Account.ref(request.to_account_id)
 
         await asyncio.gather(
-            from_account.Withdraw(context, amount=request.amount),
-            to_account.Deposit(context, amount=request.amount),
+            from_account.withdraw(context, amount=request.amount),
+            to_account.deposit(context, amount=request.amount),
         )
 
         return TransferResponse()
@@ -216,7 +216,7 @@ class BankServicer(Bank.Servicer):
 
 
 async def initialize(context: InitializeContext):
-    await Bank.Create(context, SINGLETON_BANK_ID)
+    await Bank.create(context, SINGLETON_BANK_ID)
 
 
 async def main():
