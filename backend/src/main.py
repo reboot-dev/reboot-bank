@@ -1,6 +1,5 @@
 import asyncio
 import random
-import reboot.std.collections.v1.sorted_map
 import reboot.thirdparty.mailgun
 from bank.v1.bank_rbt import (
     Account,
@@ -28,7 +27,6 @@ from bank.v1.bank_rbt import (
 )
 from datetime import timedelta
 from log.log import get_logger
-from rbt.std.collections.v1.sorted_map_rbt import SortedMap
 from rbt.thirdparty.mailgun.v1 import mailgun_rbt as mailgun
 from reboot.aio.applications import Application
 from reboot.aio.auth.authorizers import allow
@@ -40,6 +38,7 @@ from reboot.aio.contexts import (
 )
 from reboot.aio.external import InitializeContext
 from reboot.aio.secrets import SecretNotFoundException, Secrets
+from reboot.std.collections.v1.sorted_map import SortedMap, sorted_map_library
 from reboot.thirdparty.mailgun import MAILGUN_API_KEY_SECRET_NAME
 from typing import Optional
 from uuid import uuid4
@@ -223,9 +222,9 @@ async def main():
     await Application(
         servicers=[AccountServicer, BankServicer] +
         # Include mailgun `Message` servicers.
-        reboot.thirdparty.mailgun.servicers() +
-        # Include `SortedMap` servicers.
-        reboot.std.collections.v1.sorted_map.servicers(),
+        reboot.thirdparty.mailgun.servicers(),
+        # Include `SortedMap` library.
+        libraries=[sorted_map_library()],
         initialize=initialize,
     ).run()
 
